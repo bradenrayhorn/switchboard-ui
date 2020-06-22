@@ -1,25 +1,32 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import {CSSReset, ThemeProvider} from "@chakra-ui/core";
+import LoginPage from "./pages/login";
+import {Route, Switch} from "react-router";
+import {BrowserRouter} from "react-router-dom";
+import NotFound from "./pages/404";
+import Chat from "./pages/chat/chat";
+import RedirectRoute from "./utils/redirect-route";
+import theme  from '@chakra-ui/theme'
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <CSSReset/>
+      <BrowserRouter>
+        <Switch>
+          <RedirectRoute path="/login" doesRequireNoAuth>
+            <LoginPage/>
+          </RedirectRoute>
+          <RedirectRoute path="/" exact doesRequireAuth>
+            <Chat/>
+          </RedirectRoute>
+          <Route path="*">
+            <NotFound/>
+          </Route>
+        </Switch>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 
