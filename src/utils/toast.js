@@ -1,21 +1,21 @@
 const errorToast = (message, toast) => {
   toast({
-    position: "top-right",
-    title: "Error",
+    position: 'top-right',
+    title: 'Error',
     description: message,
-    status: "error",
+    status: 'error',
     duration: 3500,
     isClosable: true,
-  })
+  });
 };
 
 const persistentToast = (title, message, toast) =>
   toast({
-    position: "top",
+    position: 'top',
     title: title,
     description: message,
-    status: "warning",
+    status: 'warning',
     duration: null,
   });
 
-export {errorToast, persistentToast};
+export { errorToast, persistentToast };

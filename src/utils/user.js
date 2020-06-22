@@ -1,4 +1,4 @@
-import store from "store";
+import store from 'store';
 
 const keys = {
   jwt: 'jwt',
@@ -18,4 +18,4 @@ const getToken = () => store.get(keys.jwt);
 
 const logout = () => store.clearAll();
 
-export {login, isLoggedIn, getToken, logout, getUsername}
+export { login, isLoggedIn, getToken, logout, getUsername };

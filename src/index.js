@@ -2,28 +2,28 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import axios from "axios";
-import {getToken, isLoggedIn} from "./utils/user";
-import urls from "./constants/urls";
+import axios from 'axios';
+import { getToken, isLoggedIn } from './utils/user';
+import urls from './constants/urls';
 
 axios.defaults.baseURL = urls.coreBase;
 
 axios.interceptors.request.use(
-  config => {
+  (config) => {
     if (isLoggedIn()) {
       const token = getToken();
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  error => {
+  (error) => {
     console.log(error);
   }
 );
 
 ReactDOM.render(
   <React.StrictMode>
-    <App/>
+    <App />
   </React.StrictMode>,
   document.getElementById('root')
 );
