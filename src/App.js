@@ -7,7 +7,7 @@ import { BrowserRouter } from 'react-router-dom';
 import NotFound from './pages/404';
 import Chat from './pages/chat/chat';
 import RedirectRoute from './utils/redirect-route';
-import theme from '@chakra-ui/theme';
+import theme from './chakra';
 
 function App() {
   return (
