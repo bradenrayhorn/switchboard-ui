@@ -1,10 +1,9 @@
 import React from 'react';
-import { Button, Flex, Heading, Image } from '@chakra-ui/core';
-import logo from '../../switchboard-logo-light.svg';
+import { Button, Flex, Text } from '@chakra-ui/core';
 import { logout } from '../../utils/user';
 import { useHistory } from 'react-router';
 
-const Header = () => {
+const Header = ({ activeGroup }) => {
   const history = useHistory();
 
   return (
@@ -13,16 +12,11 @@ const Header = () => {
       align="center"
       justify="space-between"
       wrap="wrap"
-      bg="#212F3C"
       flexBasis={10}
       p={4}
+      borderBottom="1px solid #ABB2B9"
     >
-      <Flex align="center">
-        <Image src={logo} alt="switchboard logo" height={12} />
-        <Heading fontFamily="MuseoModerno" fontWeight="600" pl={2} color="#ebedef">
-          switchboard
-        </Heading>
-      </Flex>
+      <Text fontWeight="600">{activeGroup?.name}</Text>
       <Button
         variant="link"
         onClick={() => {

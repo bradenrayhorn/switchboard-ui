@@ -1,5 +1,15 @@
 import React, { useEffect, useRef } from 'react';
-import { Box, Grid, Input, Text, useToast } from '@chakra-ui/core';
+import {
+  Box,
+  Grid,
+  Input,
+  Text,
+  useToast,
+  InputGroup,
+  InputRightElement,
+  Icon,
+  Flex,
+} from '@chakra-ui/core';
 import Header from './header';
 import Sidebar from './sidebar';
 import axios from 'axios';
@@ -13,6 +23,7 @@ const Chat = () => {
   const [loading, setLoading] = React.useState(true);
   const [message, setMessage] = React.useState('');
   const [groups, setGroups] = React.useState([]);
+  const [activeGroup, setActiveGroup] = React.useState({});
   const [messages, setMessages] = React.useState([]);
   const toast = useToast();
 
@@ -25,11 +36,19 @@ const Chat = () => {
   }, [groups]);
 
   const getGroups = () => {
+    setLoading(true);
     axios
       .get('/groups')
       .then((response) => {
-        setGroups(response.data.data);
+        const groups = response.data.data.map((g) => ({
+          ...g,
+          name: g.name || g.users.map((u) => u.name).join(', '),
+        }));
+        setGroups(groups);
         setLoading(false);
+        if (groups.length > 0) {
+          setActiveGroup(groups[0]);
+        }
       })
       .catch(() => {
         errorToast('Failed to get groups.', toast);
@@ -133,28 +152,47 @@ const Chat = () => {
 
   return (
     <Box>
-      <Header />
-      <Grid templateColumns="240px 1fr" gap={6}>
-        <Sidebar groups={groups} loading={loading} />
-        <Box height="100%" alignItems="bottom">
-          {messages.map((message, i) => (
-            <Box key={i}>
-              <Text>
-                <b>{message.sender}: </b>
-                {message.message}
-              </Text>
-            </Box>
-          ))}
-          <Input
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.keyCode === 13) {
-                sendMessage();
-              }
-            }}
-          />
-        </Box>
+      <Grid templateColumns="240px 1fr">
+        <Sidebar
+          groups={groups}
+          loading={loading}
+          refreshGroups={getGroups}
+          setActiveGroup={setActiveGroup}
+        />
+        <Flex height="100vh" flexDirection="column">
+          <Header activeGroup={activeGroup} />
+          {!!activeGroup?.id && (
+            <Flex p={4} height="100%" flexDirection="column" flexGrow="1">
+              <Flex flexGrow="1" flexDirection="column">
+                {messages.map((message, i) => (
+                  <Flex key={i}>
+                    <Text>
+                      <b>{message.sender}: </b>
+                      {message.message}
+                    </Text>
+                  </Flex>
+                ))}
+              </Flex>
+              <Flex>
+                <InputGroup>
+                  <Input
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.keyCode === 13) {
+                        sendMessage();
+                      }
+                    }}
+                    placeholder="Start typing..."
+                  />
+                  <InputRightElement>
+                    <Icon name="ArrowRightIcon" />
+                  </InputRightElement>
+                </InputGroup>
+              </Flex>
+            </Flex>
+          )}
+        </Flex>
       </Grid>
     </Box>
   );

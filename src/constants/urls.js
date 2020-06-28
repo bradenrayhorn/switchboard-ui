@@ -1,5 +1,5 @@
 const urls = {
-  coreBase: 'http://localhost:8080/api',
+  coreBase: '/api',
   chatBase: 'localhost:8090/api',
 };
 

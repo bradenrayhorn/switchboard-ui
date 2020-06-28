@@ -29,7 +29,7 @@ const LoginPage = () => {
           password: values.password,
         })
         .then((response) => {
-          login(response.data.token, values.username);
+          login(response.data.token, values.username, response.data.id);
           history.push('/');
           resolve();
         })
