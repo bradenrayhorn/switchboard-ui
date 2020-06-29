@@ -5,7 +5,7 @@ const devUrls = {
 
 const prodUrls = {
   coreBase: '/api',
-  chatBase: '/api/chat/api',
+  chatBase: 'http://switchboard.braden.cc/api/chat/api',
 };
 
 const urls = process.env.NODE_ENV === 'development' ? devUrls : prodUrls;
