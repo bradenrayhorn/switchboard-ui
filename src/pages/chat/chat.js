@@ -112,7 +112,7 @@ const Chat = () => {
   };
 
   const setupWebsocket = () => {
-    client = new WebSocket(`ws://${urls.chatBase}/ws?auth=` + getToken());
+    client = new WebSocket(`ws://${urls.chatBase.replace('http://', '')}/ws?auth=` + getToken());
 
     client.onopen = () => {
       console.log('connected to ws');
