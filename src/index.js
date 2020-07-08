@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import axios from 'axios';
-import { getToken, isLoggedIn } from './utils/user';
+import { getToken, isLoggedIn, logout } from './utils/user';
 import urls from './constants/urls';
 
 axios.defaults.baseURL = urls.coreBase;
@@ -18,6 +18,17 @@ axios.interceptors.request.use(
   },
   (error) => {
     console.log(error);
+  }
+);
+
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response.status === 401) {
+      logout();
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
   }
 );
 
