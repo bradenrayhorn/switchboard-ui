@@ -2,7 +2,8 @@ name: Build and Upload to Registry
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
 
 jobs:
 
