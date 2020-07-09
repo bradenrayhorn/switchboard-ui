@@ -122,7 +122,6 @@ const Chat = () => {
 
     client.onmessage = (e) => {
       const { type, body } = JSON.parse(e.data);
-      console.log(type, body);
       if (!body) {
         return;
       }
