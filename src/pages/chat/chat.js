@@ -16,6 +16,7 @@ import axios from 'axios';
 import { errorToast, persistentToast } from '../../utils/toast';
 import { getToken, getUsername } from '../../utils/user';
 import urls from '../../constants/urls';
+import messageTypes from '../../constants/message-types';
 
 let client;
 
@@ -120,16 +121,23 @@ const Chat = () => {
     };
 
     client.onmessage = (e) => {
-      let message = JSON.parse(e.data);
-      if (message.message) {
-        let group = groupRef.current.find((g) => g.id === message.group_id);
-        setMessages((messages) => [
-          ...messages,
-          {
-            message: message.message,
-            sender: group.users.find((u) => u.id === message.user_id).name,
-          },
-        ]);
+      const { type, body } = JSON.parse(e.data);
+      if (!body) {
+        return;
+      }
+      switch (type) {
+        case messageTypes.message:
+          const group = groupRef.current.find((g) => g.id === body.group_id);
+          setMessages((messages) => [
+            ...messages,
+            {
+              message: body.message,
+              sender: group.users.find((u) => u.id === body.user_id).name,
+            },
+          ]);
+          break;
+        default:
+          break;
       }
     };
 
