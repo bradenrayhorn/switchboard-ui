@@ -22,18 +22,18 @@ let client;
 const Chat = () => {
   const [loading, setLoading] = React.useState(true);
   const [message, setMessage] = React.useState('');
-  const [groups, setGroups] = React.useState([]);
   const [activeGroup, setActiveGroup] = React.useState({});
   const [messages, setMessages] = React.useState([]);
   const toast = useToast();
 
   const groupRef = useRef([]);
+  const activeGroupRef = useRef({});
   const connectionToastID = useRef(0);
   const reconnectTimeout = useRef(0);
 
   useEffect(() => {
-    groupRef.current = groups;
-  }, [groups]);
+    activeGroupRef.current = activeGroup;
+  }, [activeGroup]);
 
   const getGroups = () => {
     setLoading(true);
@@ -44,7 +44,7 @@ const Chat = () => {
           ...g,
           name: g.name || g.users.map((u) => u.name).join(', '),
         }));
-        setGroups(groups);
+        groupRef.current = groups;
         setLoading(false);
         if (groups.length > 0) {
           setActiveGroup(groups[0]);
@@ -66,7 +66,7 @@ const Chat = () => {
     client.send(
       JSON.stringify({
         message: message,
-        group_id: groups[0].id,
+        group_id: activeGroupRef.current?.id,
       })
     );
     setMessages((messages) => [
@@ -159,21 +159,35 @@ const Chat = () => {
 
   const chatBg = useColorModeValue('white', '#283747');
 
+  const switchGroup = (newGroup) => {
+    setMessages([]);
+    if (!newGroup && groupRef.current.length > 0) {
+      setActiveGroup(groupRef.current[0]);
+    } else if (!newGroup) {
+      setActiveGroup({});
+    } else {
+      setActiveGroup(newGroup);
+    }
+  };
+
   return (
     <Box bg={chatBg}>
       <Grid templateColumns="240px 1fr">
         <Sidebar
-          groups={groups}
+          groups={groupRef.current}
           loading={loading}
           refreshGroups={getGroups}
           activeGroup={activeGroup}
-          setActiveGroup={(g) => {
-            setMessages([]);
-            setActiveGroup(g);
-          }}
+          setActiveGroup={switchGroup}
         />
         <Flex height="100vh" flexDirection="column">
-          <Header activeGroup={activeGroup} />
+          <Header
+            activeGroup={activeGroup}
+            leaveGroup={(groupID) => {
+              groupRef.current = groupRef.current.filter((g) => g.id !== groupID);
+              switchGroup(null);
+            }}
+          />
           {!!activeGroup?.id && (
             <Flex p={4} height="100%" flexDirection="column" flexGrow="1">
               <Flex flexGrow="1" flexDirection="column">
