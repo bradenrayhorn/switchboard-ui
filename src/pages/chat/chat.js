@@ -46,8 +46,15 @@ const Chat = () => {
         }));
         groupRef.current = groups;
         setLoading(false);
-        if (groups.length > 0) {
-          setActiveGroup(groups[0]);
+        // set active group
+        const activeGroupID = activeGroupRef.current?.id;
+        if (!activeGroupID && groups.length > 0) {
+          switchGroup(null);
+        } else if (
+          !!activeGroupID &&
+          (groups.length === 0 || !groups.find((g) => g.id === activeGroupID))
+        ) {
+          switchGroup(null);
         }
       })
       .catch(() => {
@@ -121,11 +128,11 @@ const Chat = () => {
 
     client.onmessage = (e) => {
       const { type, body } = JSON.parse(e.data);
-      if (!body) {
-        return;
-      }
       switch (type) {
         case messageTypes.message:
+          if (!body || activeGroupRef.current?.id !== body?.group_id) {
+            break;
+          }
           const group = groupRef.current.find((g) => g.id === body.group_id);
           setMessages((messages) => [
             ...messages,
@@ -134,6 +141,9 @@ const Chat = () => {
               sender: group.users.find((u) => u.id === body.user_id).name,
             },
           ]);
+          break;
+        case messageTypes.groupChange:
+          getGroups();
           break;
         default:
           break;
