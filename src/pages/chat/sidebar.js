@@ -1,12 +1,25 @@
 import React from 'react';
-import { Box, Button, Flex, Heading, IconButton, Text, useColorModeValue } from '@chakra-ui/core';
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  IconButton,
+  Text,
+  useColorMode,
+  useColorModeValue,
+} from '@chakra-ui/core';
 import { useDisclosure } from '@chakra-ui/hooks';
 import AddGroupModal from './add-group-modal';
-import { FiChevronDown, FiPlus, FiSettings } from 'react-icons/fi';
-import { getUsername } from '../../utils/user';
+import { FiChevronDown, FiLogOut, FiMoon, FiPlus, FiSettings, FiSun } from 'react-icons/fi';
+import { getUsername, logout } from '../../utils/user';
+import { useHistory } from 'react-router';
 
 const Sidebar = ({ groups, loading, refreshGroups, activeGroup, setActiveGroup }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const history = useHistory();
+  const { toggleColorMode } = useColorMode();
+  const ColorModeToggle = useColorModeValue(FiMoon, FiSun);
   const bgColor = useColorModeValue('gray.50', '#212F3C');
   const hoverColor = useColorModeValue('gray.100', '#243342');
   const profileColor = useColorModeValue('gray.200', '#1b2631');
@@ -68,8 +81,32 @@ const Sidebar = ({ groups, loading, refreshGroups, activeGroup, setActiveGroup }
             </Flex>
           )}
           <Flex alignItems="center" justifyContent="space-between" px={4} py={2} bg={profileColor}>
-            <Text fontWeight="bold">{getUsername()}</Text>
-            <IconButton onClick={() => {}} icon={<Box as={FiSettings} />} variant="ghost" />
+            <Text fontWeight="bold" textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
+              {getUsername()}
+            </Text>
+            <Flex>
+              <IconButton
+                variant="ghost"
+                onClick={() => {
+                  logout();
+                  history.push('/login');
+                }}
+                icon={<Box as={FiLogOut} />}
+                size="sm"
+              />
+              <IconButton
+                variant="ghost"
+                onClick={toggleColorMode}
+                icon={<Box as={ColorModeToggle} />}
+                size="sm"
+              />
+              <IconButton
+                onClick={() => {}}
+                icon={<Box as={FiSettings} />}
+                variant="ghost"
+                size="sm"
+              />
+            </Flex>
           </Flex>
         </Flex>
       </Flex>
