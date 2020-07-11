@@ -33,6 +33,12 @@ const AddGroupModal = ({ isOpen, onClose, refreshGroups }) => {
   const [users, setUsers] = useState(defaultUsers);
   const toast = useToast();
 
+  useEffect(() => {
+    if (isOpen) {
+      setUsers(defaultUsers);
+    }
+  }, [isOpen]);
+
   const createGroup = ({ groupName }) => {
     return new Promise((resolve) => {
       axios
