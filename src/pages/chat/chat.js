@@ -6,9 +6,8 @@ import {
   Text,
   useToast,
   InputGroup,
-  InputRightElement,
-  Icon,
   Flex,
+  useColorModeValue,
 } from '@chakra-ui/core';
 import Header from './header';
 import Sidebar from './sidebar';
@@ -158,14 +157,20 @@ const Chat = () => {
     };
   }, []);
 
+  const chatBg = useColorModeValue('white', '#283747');
+
   return (
-    <Box>
+    <Box bg={chatBg}>
       <Grid templateColumns="240px 1fr">
         <Sidebar
           groups={groups}
           loading={loading}
           refreshGroups={getGroups}
-          setActiveGroup={setActiveGroup}
+          activeGroup={activeGroup}
+          setActiveGroup={(g) => {
+            setMessages([]);
+            setActiveGroup(g);
+          }}
         />
         <Flex height="100vh" flexDirection="column">
           <Header activeGroup={activeGroup} />
@@ -175,7 +180,7 @@ const Chat = () => {
                 {messages.map((message, i) => (
                   <Flex key={i}>
                     <Text>
-                      <b>{message.sender}: </b>
+                      <b>{message.sender} </b>
                       {message.message}
                     </Text>
                   </Flex>
@@ -192,10 +197,8 @@ const Chat = () => {
                       }
                     }}
                     placeholder="Start typing..."
+                    pr={0}
                   />
-                  <InputRightElement>
-                    <Icon name="ArrowRightIcon" />
-                  </InputRightElement>
                 </InputGroup>
               </Flex>
             </Flex>

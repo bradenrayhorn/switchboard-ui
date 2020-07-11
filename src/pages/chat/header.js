@@ -1,10 +1,13 @@
 import React from 'react';
-import { Button, Flex, Text } from '@chakra-ui/core';
+import { Box, Flex, IconButton, Text, useColorMode, useColorModeValue } from '@chakra-ui/core';
 import { logout } from '../../utils/user';
 import { useHistory } from 'react-router';
+import { FiLogOut, FiMoon, FiSun } from 'react-icons/fi';
 
 const Header = ({ activeGroup }) => {
   const history = useHistory();
+  const { toggleColorMode } = useColorMode();
+  const ColorModeToggle = useColorModeValue(FiMoon, FiSun);
 
   return (
     <Flex
@@ -13,19 +16,27 @@ const Header = ({ activeGroup }) => {
       justify="space-between"
       wrap="wrap"
       flexBasis={10}
-      p={4}
-      borderBottom="1px solid #ABB2B9"
+      py={1}
+      px={4}
+      borderBottomWidth="1px"
     >
       <Text fontWeight="600">{activeGroup?.name}</Text>
-      <Button
-        variant="link"
-        onClick={() => {
-          logout();
-          history.push('/login');
-        }}
-      >
-        Logout
-      </Button>
+      <Box>
+        <IconButton
+          variant="ghost"
+          onClick={toggleColorMode}
+          icon={<Box as={ColorModeToggle} />}
+          mr={2}
+        />
+        <IconButton
+          variant="ghost"
+          onClick={() => {
+            logout();
+            history.push('/login');
+          }}
+          icon={<Box as={FiLogOut} />}
+        />
+      </Box>
     </Flex>
   );
 };
