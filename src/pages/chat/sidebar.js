@@ -8,15 +8,21 @@ import {
   Text,
   useColorMode,
   useColorModeValue,
+  Menu,
+  MenuList,
+  MenuItem,
+  MenuButton,
 } from '@chakra-ui/core';
 import { useDisclosure } from '@chakra-ui/hooks';
 import AddGroupModal from './add-group-modal';
 import { FiChevronDown, FiLogOut, FiMoon, FiPlus, FiSettings, FiSun } from 'react-icons/fi';
 import { getUsername, logout } from '../../utils/user';
 import { useHistory } from 'react-router';
+import InviteUserModal from './invite-user-modal';
 
-const Sidebar = ({ groups, loading, refreshGroups, activeGroup, setActiveGroup }) => {
+const Sidebar = ({ groups, loading, refreshGroups, activeGroup, setActiveGroup, organization }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: inviteOpen, onOpen: inviteOnOpen, onClose: inviteOnClose } = useDisclosure();
   const history = useHistory();
   const { toggleColorMode } = useColorMode();
   const ColorModeToggle = useColorModeValue(FiMoon, FiSun);
@@ -26,28 +32,41 @@ const Sidebar = ({ groups, loading, refreshGroups, activeGroup, setActiveGroup }
   return (
     <>
       <Flex height="100vh" borderRightWidth="1px" bg={bgColor} flexDir="column">
-        <Flex
-          align="center"
-          mb={5}
-          px={4}
-          py={1}
-          borderBottomWidth="1px"
-          justifyContent="space-between"
-          as={Button}
-          w="100%"
-          borderRadius={0}
-          h="calc(3rem + 1px)"
-          bg={bgColor}
-          flexShrink={0}
-          _hover={{
-            bg: hoverColor,
-          }}
-        >
-          <Heading fontFamily="MuseoModerno" fontWeight="600" fontSize="1.25rem">
-            switchboard
-          </Heading>
-          <Box as={FiChevronDown} />
-        </Flex>
+        <Menu>
+          <Flex
+            align="center"
+            mb={5}
+            px={4}
+            py={1}
+            borderBottomWidth="1px"
+            justifyContent="space-between"
+            as={MenuButton}
+            w="100%"
+            borderRadius={0}
+            h="calc(3rem + 1px)"
+            bg={bgColor}
+            flexShrink={0}
+            _hover={{
+              bg: hoverColor,
+            }}
+            _active={{
+              bg: hoverColor,
+            }}
+          >
+            <Flex flexDir="column">
+              <Heading fontFamily="MuseoModerno" fontWeight="600" fontSize="1.25rem">
+                switchboard
+              </Heading>
+              <Heading fontSize=".8rem" textAlign="left">
+                {organization?.name}
+              </Heading>
+            </Flex>
+            <Box as={FiChevronDown} />
+          </Flex>
+          <MenuList>
+            <MenuItem onClick={inviteOnOpen}>Invite User</MenuItem>
+          </MenuList>
+        </Menu>
         <Flex height="100%" flexDir="column">
           {!loading && (
             <Flex px={4} flexGrow="1" h="100%" alignItems="flex-start" flexDir="column">
@@ -110,7 +129,13 @@ const Sidebar = ({ groups, loading, refreshGroups, activeGroup, setActiveGroup }
           </Flex>
         </Flex>
       </Flex>
-      <AddGroupModal isOpen={isOpen} onClose={onClose} refreshGroups={refreshGroups} />
+      <AddGroupModal
+        isOpen={isOpen}
+        onClose={onClose}
+        refreshGroups={refreshGroups}
+        organization={organization}
+      />
+      <InviteUserModal isOpen={inviteOpen} onClose={inviteOnClose} organization={organization} />
     </>
   );
 };

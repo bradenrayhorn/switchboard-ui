@@ -29,7 +29,12 @@ const LoginPage = () => {
           password: values.password,
         })
         .then((response) => {
-          login(response.data.token, values.username, response.data.id);
+          login(
+            response.data.token,
+            values.username,
+            response.data.id,
+            response.data.has_organization
+          );
           history.push('/');
           resolve();
         })

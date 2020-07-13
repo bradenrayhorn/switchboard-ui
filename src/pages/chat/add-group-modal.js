@@ -26,7 +26,7 @@ const RemoveButton = (props) => {
   return <components.MultiValueRemove {...props} />;
 };
 
-const AddGroupModal = ({ isOpen, onClose, refreshGroups }) => {
+const AddGroupModal = ({ isOpen, onClose, refreshGroups, organization }) => {
   const defaultUsers = [{ value: getID(), label: getUsername() }];
 
   const { handleSubmit, register, formState } = useForm();
@@ -43,8 +43,9 @@ const AddGroupModal = ({ isOpen, onClose, refreshGroups }) => {
     return new Promise((resolve) => {
       axios
         .post('/groups/create', {
-          name: !!groupName || null,
+          name: groupName || null,
           users: users.map((x) => x.value),
+          organization_id: organization?.id,
         })
         .then(() => {
           resolve();
@@ -71,6 +72,7 @@ const AddGroupModal = ({ isOpen, onClose, refreshGroups }) => {
       axios
         .post('/users/search', {
           username: name,
+          organization_id: organization?.id,
         })
         .then((response) => {
           resolve(
