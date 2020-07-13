@@ -8,6 +8,7 @@ import NotFound from './pages/404';
 import Chat from './pages/chat/chat';
 import RedirectRoute from './utils/redirect-route';
 import theme from './chakra';
+import OrganizationPage from './pages/organization/organization';
 
 function App() {
   return (
@@ -17,6 +18,9 @@ function App() {
         <Switch>
           <RedirectRoute path="/login" doesRequireNoAuth>
             <LoginPage />
+          </RedirectRoute>
+          <RedirectRoute path="/organization" doesRequireAuth>
+            <OrganizationPage />
           </RedirectRoute>
           <RedirectRoute path="/" exact doesRequireAuth>
             <Chat />

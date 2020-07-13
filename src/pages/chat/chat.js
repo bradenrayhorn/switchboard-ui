@@ -13,9 +13,10 @@ import Header from './header';
 import Sidebar from './sidebar';
 import axios from 'axios';
 import { errorToast, persistentToast } from '../../utils/toast';
-import { getToken, getUsername } from '../../utils/user';
+import { getToken, getUsername, hasOrganization, setHasOrganization } from '../../utils/user';
 import urls from '../../constants/urls';
 import messageTypes from '../../constants/message-types';
+import { useHistory } from 'react-router';
 
 let client;
 
@@ -23,10 +24,13 @@ const Chat = () => {
   const [loading, setLoading] = React.useState(true);
   const [message, setMessage] = React.useState('');
   const [activeGroup, setActiveGroup] = React.useState({});
+  const [activeOrganization, setActiveOrganization] = React.useState(null);
   const [messages, setMessages] = React.useState([]);
+  const history = useHistory();
   const toast = useToast();
 
   const groupRef = useRef([]);
+  const organizations = useRef([]);
   const activeGroupRef = useRef({});
   const connectionToastID = useRef(0);
   const reconnectTimeout = useRef(0);
@@ -59,6 +63,25 @@ const Chat = () => {
       })
       .catch(() => {
         errorToast('Failed to get groups.', toast);
+      });
+  };
+
+  const getOrganizations = (onComplete) => {
+    axios
+      .get('/organizations')
+      .then((response) => {
+        organizations.current = response.data.data;
+        if (organizations.current.length > 0) {
+          setActiveOrganization(organizations.current[0]);
+        } else {
+          setHasOrganization(false);
+          history.push('/organization');
+          return;
+        }
+        onComplete();
+      })
+      .catch(() => {
+        errorToast('Failed to get organizations.', toast);
       });
   };
 
@@ -159,8 +182,14 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    getGroups();
-    setupWebsocket();
+    if (!hasOrganization()) {
+      history.push('/organization');
+      return;
+    }
+    getOrganizations(() => {
+      getGroups();
+      setupWebsocket();
+    });
     return () => {
       // eslint-disable-next-line no-unused-expressions
       client?.close(4001);
@@ -189,6 +218,7 @@ const Chat = () => {
           refreshGroups={getGroups}
           activeGroup={activeGroup}
           setActiveGroup={switchGroup}
+          organization={activeOrganization}
         />
         <Flex height="100vh" flexDirection="column">
           <Header
@@ -199,8 +229,15 @@ const Chat = () => {
             }}
           />
           {!!activeGroup?.id && (
-            <Flex p={4} height="100%" flexDirection="column" flexGrow="1">
-              <Flex flexGrow="1" flexDirection="column">
+            <Flex height="100%" flexDirection="column" flexGrow="1">
+              <Flex
+                flexGrow="1"
+                flexDirection="column"
+                overflow="scroll"
+                flexBasis="0"
+                px={4}
+                pt={4}
+              >
                 {messages.map((message, i) => (
                   <Flex key={i}>
                     <Text>
@@ -209,8 +246,9 @@ const Chat = () => {
                     </Text>
                   </Flex>
                 ))}
+                <Flex pb={3} />
               </Flex>
-              <Flex>
+              <Flex px={4} pb={4}>
                 <InputGroup>
                   <Input
                     value={message}
