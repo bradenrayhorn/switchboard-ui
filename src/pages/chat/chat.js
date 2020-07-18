@@ -17,10 +17,13 @@ import { getToken, getUsername, hasOrganization, setHasOrganization } from '../.
 import urls from '../../constants/urls';
 import messageTypes from '../../constants/message-types';
 import { useHistory } from 'react-router';
+import { useDisclosure } from '@chakra-ui/hooks';
+import { Drawer, DrawerBody, DrawerContent, DrawerOverlay } from '@chakra-ui/drawer';
 
 let client;
 
 const Chat = () => {
+  const { isOpen: isDrawerOpen, onOpen: onDrawerOpen, onClose: onDrawerClose } = useDisclosure();
   const [loading, setLoading] = React.useState(true);
   const [message, setMessage] = React.useState('');
   const [activeGroup, setActiveGroup] = React.useState({});
@@ -186,6 +189,7 @@ const Chat = () => {
       history.push('/organization');
       return;
     }
+    onDrawerOpen();
     getOrganizations(() => {
       getGroups();
       setupWebsocket();
@@ -211,7 +215,7 @@ const Chat = () => {
 
   return (
     <Box bg={chatBg}>
-      <Grid templateColumns="240px 1fr">
+      <Grid templateColumns={{ xs: '1fr', sm: '240px 1fr' }}>
         <Sidebar
           groups={groupRef.current}
           refreshGroups={getGroups}
@@ -219,6 +223,23 @@ const Chat = () => {
           setActiveGroup={switchGroup}
           organization={activeOrganization}
         />
+        <Drawer onClose={onDrawerClose} isOpen={isDrawerOpen} size="full">
+          <DrawerContent>
+            <DrawerBody p={0}>
+              <Sidebar
+                groups={groupRef.current}
+                refreshGroups={getGroups}
+                activeGroup={activeGroup}
+                setActiveGroup={(newGroup) => {
+                  setActiveGroup(newGroup);
+                  onDrawerClose();
+                }}
+                organization={activeOrganization}
+                fullWidth={true}
+              />
+            </DrawerBody>
+          </DrawerContent>
+        </Drawer>
         <Flex height="100vh" flexDirection="column">
           <Header
             activeGroup={activeGroup}
@@ -226,6 +247,7 @@ const Chat = () => {
               groupRef.current = groupRef.current.filter((g) => g.id !== groupID);
               switchGroup(null);
             }}
+            openDrawer={onDrawerOpen}
           />
           {!!activeGroup?.id && (
             <Flex height="100%" flexDirection="column" flexGrow="1">
