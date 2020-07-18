@@ -224,7 +224,12 @@ const Chat = () => {
           organization={activeOrganization}
         />
         <Drawer onClose={onDrawerClose} isOpen={isDrawerOpen} size="full">
-          <DrawerContent>
+          <DrawerContent
+            display={{
+              xs: 'flex',
+              sm: 'none',
+            }}
+          >
             <DrawerBody p={0}>
               <Sidebar
                 groups={groupRef.current}
