@@ -1,27 +1,21 @@
-import React from 'react';
-import { Box, Flex, IconButton, Text, useToast } from '@chakra-ui/core';
-import { getID } from '../../utils/user';
-import { FiLogOut } from 'react-icons/fi';
-import axios from 'axios';
-import { errorToast, successToast } from '../../utils/toast';
+import React, { useState } from 'react';
+import {
+  Box,
+  Flex,
+  IconButton,
+  Popover,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
+  Text,
+} from '@chakra-ui/core';
+import { FiLogOut, FiUsers } from 'react-icons/fi';
+import LeaveGroupConfirmation from './leave-group-confirmation';
 
 const Header = ({ activeGroup, leaveGroup }) => {
-  const toast = useToast();
-
-  const handleLeaveGroup = () => {
-    axios
-      .post('/groups/update', {
-        id: activeGroup.id,
-        remove_users: [getID()],
-      })
-      .then(() => {
-        successToast('Group Left', 'You have left the group.', toast);
-        leaveGroup(activeGroup.id);
-      })
-      .catch(() => {
-        errorToast('Failed to leave the group.', toast);
-      });
-  };
+  const [leaveOpen, setLeaveOpen] = useState(false);
 
   return (
     <Flex
@@ -38,9 +32,38 @@ const Header = ({ activeGroup, leaveGroup }) => {
       <Text fontWeight="600">{activeGroup?.name}</Text>
       <Box>
         {!!activeGroup?.id && (
-          <IconButton variant="ghost" onClick={handleLeaveGroup} icon={<Box as={FiLogOut} />} />
+          <>
+            <Popover>
+              <PopoverTrigger>
+                <IconButton variant="ghost" icon={<Box as={FiUsers} />} mx={1} />
+              </PopoverTrigger>
+              <PopoverContent>
+                <PopoverHeader>Users</PopoverHeader>
+                <PopoverCloseButton />
+                <PopoverBody>
+                  {activeGroup?.users?.map((u, i) => (
+                    <Text key={i}>{u.username}</Text>
+                  ))}
+                </PopoverBody>
+              </PopoverContent>
+            </Popover>
+            <IconButton
+              variant="ghost"
+              onClick={() => setLeaveOpen(true)}
+              icon={<Box as={FiLogOut} />}
+              mx={1}
+            />
+          </>
         )}
       </Box>
+      <LeaveGroupConfirmation
+        isOpen={leaveOpen}
+        onClose={() => setLeaveOpen(false)}
+        groupID={activeGroup?.id}
+        leaveGroup={() => {
+          leaveGroup(activeGroup.id);
+        }}
+      />
     </Flex>
   );
 };
