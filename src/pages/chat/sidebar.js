@@ -20,7 +20,14 @@ import { getUsername, logout } from '../../utils/user';
 import { useHistory } from 'react-router';
 import InviteUserModal from './invite-user-modal';
 
-const Sidebar = ({ groups, refreshGroups, activeGroup, setActiveGroup, organization }) => {
+const Sidebar = ({
+  groups,
+  refreshGroups,
+  activeGroup,
+  setActiveGroup,
+  organization,
+  fullWidth,
+}) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: inviteOpen, onOpen: inviteOnOpen, onClose: inviteOnClose } = useDisclosure();
   const history = useHistory();
@@ -31,7 +38,13 @@ const Sidebar = ({ groups, refreshGroups, activeGroup, setActiveGroup, organizat
   const profileColor = useColorModeValue('gray.200', '#1b2631');
   return (
     <>
-      <Flex height="100vh" borderRightWidth="1px" bg={bgColor} flexDir="column">
+      <Flex
+        height="100vh"
+        borderRightWidth="1px"
+        bg={bgColor}
+        flexDir="column"
+        display={{ xs: fullWidth ? 'flex' : 'none', sm: 'flex' }}
+      >
         <Menu>
           <Flex
             align="center"

@@ -46,15 +46,18 @@ const LoginPage = () => {
   };
 
   return (
-    <Box w="100vw" h="100vh" bg="#212F3C">
+    <Box w="100vw" h="100vh" bg="#212F3C" pt={8}>
       <Box
-        width={['98%', '300px']}
+        width={{
+          xs: 'calc(100% - 1rem)',
+          sm: '300px',
+        }}
         bg="#F4F6F7"
         p="4"
-        position="absolute"
-        top="50%"
-        left="50%"
-        transform="translate(-50%, -100%)"
+        mx={{
+          xs: 2,
+          sm: 'auto',
+        }}
       >
         <Image src={logo} alt="switchboard logo" w="100%" />
         <form onSubmit={handleSubmit(attemptLogin)}>

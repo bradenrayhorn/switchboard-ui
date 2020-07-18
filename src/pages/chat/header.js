@@ -11,10 +11,10 @@ import {
   PopoverTrigger,
   Text,
 } from '@chakra-ui/core';
-import { FiLogOut, FiUsers } from 'react-icons/fi';
+import { FiLogOut, FiUsers, FiChevronLeft } from 'react-icons/fi';
 import LeaveGroupConfirmation from './leave-group-confirmation';
 
-const Header = ({ activeGroup, leaveGroup }) => {
+const Header = ({ activeGroup, leaveGroup, openDrawer }) => {
   const [leaveOpen, setLeaveOpen] = useState(false);
 
   return (
@@ -29,7 +29,19 @@ const Header = ({ activeGroup, leaveGroup }) => {
       borderBottomWidth="1px"
       minHeight="calc(3rem + 1px)"
     >
-      <Text fontWeight="600">{activeGroup?.name}</Text>
+      <Flex alignItems="center">
+        <IconButton
+          variant="ghost"
+          onClick={openDrawer}
+          icon={<Box as={FiChevronLeft} />}
+          display={{
+            xs: 'inline-flex',
+            sm: 'none',
+          }}
+          mr={2}
+        />
+        <Text fontWeight="600">{activeGroup?.name}</Text>
+      </Flex>
       <Box>
         {!!activeGroup?.id && (
           <>
