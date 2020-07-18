@@ -42,7 +42,7 @@ const Chat = () => {
   const getGroups = () => {
     setLoading(true);
     axios
-      .get('/groups')
+      .get('/channels')
       .then((response) => {
         const groups = response.data.data.map((g) => ({
           ...g,
@@ -161,7 +161,7 @@ const Chat = () => {
             ...messages,
             {
               message: body.message,
-              sender: group.users.find((u) => u.id === body.user_id).name,
+              sender: group.users.find((u) => u.id === body.user_id).username,
             },
           ]);
           break;
@@ -214,7 +214,6 @@ const Chat = () => {
       <Grid templateColumns="240px 1fr">
         <Sidebar
           groups={groupRef.current}
-          loading={loading}
           refreshGroups={getGroups}
           activeGroup={activeGroup}
           setActiveGroup={switchGroup}

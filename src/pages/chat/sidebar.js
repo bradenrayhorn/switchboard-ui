@@ -14,13 +14,13 @@ import {
   MenuButton,
 } from '@chakra-ui/core';
 import { useDisclosure } from '@chakra-ui/hooks';
-import AddGroupModal from './add-group-modal';
+import CreateChannelModal from './create-channel-modal';
 import { FiChevronDown, FiLogOut, FiMoon, FiPlus, FiSettings, FiSun } from 'react-icons/fi';
 import { getUsername, logout } from '../../utils/user';
 import { useHistory } from 'react-router';
 import InviteUserModal from './invite-user-modal';
 
-const Sidebar = ({ groups, loading, refreshGroups, activeGroup, setActiveGroup, organization }) => {
+const Sidebar = ({ groups, refreshGroups, activeGroup, setActiveGroup, organization }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: inviteOpen, onOpen: inviteOnOpen, onClose: inviteOnClose } = useDisclosure();
   const history = useHistory();
@@ -68,37 +68,35 @@ const Sidebar = ({ groups, loading, refreshGroups, activeGroup, setActiveGroup, 
           </MenuList>
         </Menu>
         <Flex height="100%" flexDir="column">
-          {!loading && (
-            <Flex px={4} flexGrow="1" h="100%" alignItems="flex-start" flexDir="column">
-              <Flex justifyContent="space-between" alignItems="center" mb={2} w="100%">
-                <Heading size="sm" textTransform="uppercase" fontSize="0.75rem">
-                  Text Channels
-                </Heading>
-                <IconButton onClick={onOpen} icon={<Box as={FiPlus} />} size="sm" variant="ghost" />
-              </Flex>
-              <Flex flexDir="column" w="100%">
-                {groups.map((group, i) => (
-                  <Flex
-                    key={i}
-                    w="100%"
-                    my={1}
-                    py={1}
-                    pl={2}
-                    cursor="pointer"
-                    bg={activeGroup?.id === group.id ? hoverColor : 'transparent'}
-                    fontWeight={activeGroup?.id === group.id ? 'bold' : 'normal'}
-                    _hover={{
-                      bg: hoverColor,
-                    }}
-                    borderRadius={4}
-                    onClick={() => setActiveGroup(group)}
-                  >
-                    {group.name}
-                  </Flex>
-                ))}
-              </Flex>
+          <Flex px={4} flexGrow="1" h="100%" alignItems="flex-start" flexDir="column">
+            <Flex justifyContent="space-between" alignItems="center" mb={2} w="100%">
+              <Heading size="sm" textTransform="uppercase" fontSize="0.75rem">
+                Text Channels
+              </Heading>
+              <IconButton onClick={onOpen} icon={<Box as={FiPlus} />} size="sm" variant="ghost" />
             </Flex>
-          )}
+            <Flex flexDir="column" w="100%">
+              {groups.map((group, i) => (
+                <Flex
+                  key={i}
+                  w="100%"
+                  my={1}
+                  py={1}
+                  pl={2}
+                  cursor="pointer"
+                  bg={activeGroup?.id === group.id ? hoverColor : 'transparent'}
+                  fontWeight={activeGroup?.id === group.id ? 'bold' : 'normal'}
+                  _hover={{
+                    bg: hoverColor,
+                  }}
+                  borderRadius={4}
+                  onClick={() => setActiveGroup(group)}
+                >
+                  {group.name}
+                </Flex>
+              ))}
+            </Flex>
+          </Flex>
           <Flex alignItems="center" justifyContent="space-between" px={4} py={2} bg={profileColor}>
             <Text fontWeight="bold" textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
               {getUsername()}
@@ -129,7 +127,7 @@ const Sidebar = ({ groups, loading, refreshGroups, activeGroup, setActiveGroup, 
           </Flex>
         </Flex>
       </Flex>
-      <AddGroupModal
+      <CreateChannelModal
         isOpen={isOpen}
         onClose={onClose}
         refreshGroups={refreshGroups}
