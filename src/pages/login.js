@@ -38,7 +38,7 @@ const LoginPage = () => {
           history.push('/');
           resolve();
         })
-        .catch((error) => {
+        .catch(() => {
           errorToast('Invalid login credentials.', toast);
           resolve();
         });
@@ -46,7 +46,18 @@ const LoginPage = () => {
   };
 
   return (
-    <Box w="100vw" h="100vh" bg="#212F3C" pt={8}>
+    <>
+      <Box
+        w="100%"
+        h="100%"
+        bg="#212F3C"
+        position="fixed"
+        top={0}
+        right={0}
+        bottom={0}
+        left={0}
+        zIndex={-10}
+      />
       <Box
         width={{
           xs: 'calc(100% - 1rem)',
@@ -54,6 +65,7 @@ const LoginPage = () => {
         }}
         bg="#F4F6F7"
         p="4"
+        mt={8}
         mx={{
           xs: 2,
           sm: 'auto',
@@ -78,7 +90,7 @@ const LoginPage = () => {
           </Box>
         </form>
       </Box>
-    </Box>
+    </>
   );
 };
 
