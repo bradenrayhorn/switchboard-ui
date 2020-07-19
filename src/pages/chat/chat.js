@@ -8,6 +8,7 @@ import {
   InputGroup,
   Flex,
   useColorModeValue,
+  useMediaQuery,
 } from '@chakra-ui/core';
 import Header from './header';
 import Sidebar from './sidebar';
@@ -19,6 +20,7 @@ import messageTypes from '../../constants/message-types';
 import { useHistory } from 'react-router';
 import { useDisclosure } from '@chakra-ui/hooks';
 import { Drawer, DrawerBody, DrawerContent, DrawerOverlay } from '@chakra-ui/drawer';
+import useIsMobile from '../../utils/is-mobile';
 
 let client;
 
@@ -37,6 +39,8 @@ const Chat = () => {
   const activeGroupRef = useRef({});
   const connectionToastID = useRef(0);
   const reconnectTimeout = useRef(0);
+
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     activeGroupRef.current = activeGroup;
@@ -223,28 +227,30 @@ const Chat = () => {
           setActiveGroup={switchGroup}
           organization={activeOrganization}
         />
-        <Drawer onClose={onDrawerClose} isOpen={isDrawerOpen} size="full">
-          <DrawerContent
-            display={{
-              xs: 'flex',
-              sm: 'none',
-            }}
-          >
-            <DrawerBody p={0}>
-              <Sidebar
-                groups={groupRef.current}
-                refreshGroups={getGroups}
-                activeGroup={activeGroup}
-                setActiveGroup={(newGroup) => {
-                  setActiveGroup(newGroup);
-                  onDrawerClose();
-                }}
-                organization={activeOrganization}
-                fullWidth={true}
-              />
-            </DrawerBody>
-          </DrawerContent>
-        </Drawer>
+        {isMobile && (
+          <Drawer onClose={onDrawerClose} isOpen={isDrawerOpen} size="full">
+            <DrawerContent
+              display={{
+                xs: 'flex',
+                sm: 'none',
+              }}
+            >
+              <DrawerBody p={0}>
+                <Sidebar
+                  groups={groupRef.current}
+                  refreshGroups={getGroups}
+                  activeGroup={activeGroup}
+                  setActiveGroup={(newGroup) => {
+                    setActiveGroup(newGroup);
+                    onDrawerClose();
+                  }}
+                  organization={activeOrganization}
+                  fullWidth={true}
+                />
+              </DrawerBody>
+            </DrawerContent>
+          </Drawer>
+        )}
         <Flex height="100vh" flexDirection="column">
           <Header
             activeGroup={activeGroup}
