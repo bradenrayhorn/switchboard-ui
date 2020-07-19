@@ -1,17 +1,16 @@
 import React from 'react';
 import {
   Box,
-  Button,
   Flex,
   Heading,
   IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Text,
   useColorMode,
   useColorModeValue,
-  Menu,
-  MenuList,
-  MenuItem,
-  MenuButton,
 } from '@chakra-ui/core';
 import { useDisclosure } from '@chakra-ui/hooks';
 import CreateChannelModal from './create-channel-modal';
@@ -39,7 +38,7 @@ const Sidebar = ({
   return (
     <>
       <Flex
-        height="100vh"
+        height="100%"
         borderRightWidth="1px"
         bg={bgColor}
         flexDir="column"

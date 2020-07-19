@@ -1,4 +1,3 @@
-import React from 'react';
 import { useMediaQuery } from '@chakra-ui/core';
 
 const useIsMobile = () => {

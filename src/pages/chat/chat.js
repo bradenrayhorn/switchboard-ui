@@ -1,14 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import {
   Box,
+  Flex,
   Grid,
   Input,
-  Text,
-  useToast,
   InputGroup,
-  Flex,
+  Text,
   useColorModeValue,
-  useMediaQuery,
+  useToast,
 } from '@chakra-ui/core';
 import Header from './header';
 import Sidebar from './sidebar';
@@ -19,14 +18,12 @@ import urls from '../../constants/urls';
 import messageTypes from '../../constants/message-types';
 import { useHistory } from 'react-router';
 import { useDisclosure } from '@chakra-ui/hooks';
-import { Drawer, DrawerBody, DrawerContent, DrawerOverlay } from '@chakra-ui/drawer';
 import useIsMobile from '../../utils/is-mobile';
 
 let client;
 
 const Chat = () => {
-  const { isOpen: isDrawerOpen, onOpen: onDrawerOpen, onClose: onDrawerClose } = useDisclosure();
-  const [loading, setLoading] = React.useState(true);
+  const { isOpen: isSidebarOpen, onOpen: onSidebarOpen, onClose: onSidebarClose } = useDisclosure();
   const [message, setMessage] = React.useState('');
   const [activeGroup, setActiveGroup] = React.useState({});
   const [activeOrganization, setActiveOrganization] = React.useState(null);
@@ -47,7 +44,6 @@ const Chat = () => {
   }, [activeGroup]);
 
   const getGroups = () => {
-    setLoading(true);
     axios
       .get('/channels')
       .then((response) => {
@@ -56,7 +52,6 @@ const Chat = () => {
           name: g.name || g.users.map((u) => u.name).join(', '),
         }));
         groupRef.current = groups;
-        setLoading(false);
         // set active group
         const activeGroupID = activeGroupRef.current?.id;
         if (!activeGroupID && groups.length > 0) {
@@ -193,7 +188,7 @@ const Chat = () => {
       history.push('/organization');
       return;
     }
-    onDrawerOpen();
+    onSidebarOpen();
     getOrganizations(() => {
       getGroups();
       setupWebsocket();
@@ -218,86 +213,70 @@ const Chat = () => {
   };
 
   return (
-    <Box bg={chatBg}>
-      <Grid templateColumns={{ xs: '1fr', sm: '240px 1fr' }}>
-        <Sidebar
-          groups={groupRef.current}
-          refreshGroups={getGroups}
-          activeGroup={activeGroup}
-          setActiveGroup={switchGroup}
-          organization={activeOrganization}
-        />
-        {isMobile && (
-          <Drawer onClose={onDrawerClose} isOpen={isDrawerOpen} size="full">
-            <DrawerContent
-              display={{
-                xs: 'flex',
-                sm: 'none',
-              }}
-            >
-              <DrawerBody p={0}>
-                <Sidebar
-                  groups={groupRef.current}
-                  refreshGroups={getGroups}
-                  activeGroup={activeGroup}
-                  setActiveGroup={(newGroup) => {
-                    setActiveGroup(newGroup);
-                    onDrawerClose();
-                  }}
-                  organization={activeOrganization}
-                  fullWidth={true}
-                />
-              </DrawerBody>
-            </DrawerContent>
-          </Drawer>
-        )}
-        <Flex height="100vh" flexDirection="column">
-          <Header
+    <Box bg={chatBg} h="100%">
+      <Grid templateColumns={{ xs: '1fr', sm: '240px 1fr' }} h="100%">
+        {(!isMobile || isSidebarOpen) && (
+          <Sidebar
+            groups={groupRef.current}
+            refreshGroups={getGroups}
             activeGroup={activeGroup}
-            leaveGroup={(groupID) => {
-              groupRef.current = groupRef.current.filter((g) => g.id !== groupID);
-              switchGroup(null);
+            setActiveGroup={(newGroup) => {
+              setActiveGroup(newGroup);
+              onSidebarClose();
             }}
-            openDrawer={onDrawerOpen}
+            organization={activeOrganization}
+            fullWidth={isMobile}
           />
-          {!!activeGroup?.id && (
-            <Flex height="100%" flexDirection="column" flexGrow="1">
-              <Flex
-                flexGrow="1"
-                flexDirection="column"
-                overflow="scroll"
-                flexBasis="0"
-                px={4}
-                pt={4}
-              >
-                {messages.map((message, i) => (
-                  <Flex key={i}>
-                    <Text>
-                      <b>{message.sender} </b>
-                      {message.message}
-                    </Text>
-                  </Flex>
-                ))}
-                <Flex pb={3} />
+        )}
+        {(!isMobile || !isSidebarOpen) && (
+          <Flex height="100%" flexDirection="column">
+            <Header
+              activeGroup={activeGroup}
+              leaveGroup={(groupID) => {
+                groupRef.current = groupRef.current.filter((g) => g.id !== groupID);
+                switchGroup(null);
+              }}
+              openDrawer={onSidebarOpen}
+            />
+            {!!activeGroup?.id && (
+              <Flex height="100%" flexDirection="column" flexGrow="1">
+                <Flex
+                  flexGrow="1"
+                  flexDirection="column"
+                  overflow="scroll"
+                  flexBasis="0"
+                  px={4}
+                  pt={4}
+                >
+                  {messages.map((message, i) => (
+                    <Flex key={i}>
+                      <Text>
+                        <b>{message.sender} </b>
+                        {message.message}
+                      </Text>
+                    </Flex>
+                  ))}
+                  <Flex pb={3} />
+                </Flex>
+                <Flex px={4} pb={4}>
+                  <InputGroup>
+                    <Input
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.keyCode === 13) {
+                          sendMessage();
+                        }
+                      }}
+                      placeholder="Start typing..."
+                      pr={0}
+                    />
+                  </InputGroup>
+                </Flex>
               </Flex>
-              <Flex px={4} pb={4}>
-                <InputGroup>
-                  <Input
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.keyCode === 13) {
-                        sendMessage();
-                      }
-                    }}
-                    placeholder="Start typing..."
-                    pr={0}
-                  />
-                </InputGroup>
-              </Flex>
-            </Flex>
-          )}
-        </Flex>
+            )}
+          </Flex>
+        )}
       </Grid>
     </Box>
   );
