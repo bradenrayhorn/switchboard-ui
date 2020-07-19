@@ -1,25 +1,19 @@
 import React from 'react';
 import {
   Button,
-  Divider,
   FormControl,
   FormErrorMessage,
   FormLabel,
-  Heading,
   Input,
-  Link,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Text,
   useToast,
 } from '@chakra-ui/core';
 import { useForm } from 'react-hook-form';
-import { logout, setHasOrganization } from '../../utils/user';
-import { useHistory } from 'react-router';
 import axios from 'axios';
 import { errorToast, successToast } from '../../utils/toast';
 
