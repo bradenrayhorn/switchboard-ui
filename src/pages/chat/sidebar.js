@@ -18,15 +18,9 @@ import { FiChevronDown, FiLogOut, FiMoon, FiPlus, FiSettings, FiSun } from 'reac
 import { getUsername, logout } from '../../utils/user';
 import { useHistory } from 'react-router';
 import InviteUserModal from './invite-user-modal';
+import { useChat } from './chat-context';
 
-const Sidebar = ({
-  groups,
-  refreshGroups,
-  activeGroup,
-  setActiveGroup,
-  organization,
-  fullWidth,
-}) => {
+const Sidebar = ({ closeSidebar, fullWidth }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: inviteOpen, onOpen: inviteOnOpen, onClose: inviteOnClose } = useDisclosure();
   const history = useHistory();
@@ -35,6 +29,12 @@ const Sidebar = ({
   const bgColor = useColorModeValue('gray.50', '#212F3C');
   const hoverColor = useColorModeValue('gray.100', '#243342');
   const profileColor = useColorModeValue('gray.200', '#1b2631');
+  const [{ activeOrganization, groups, activeGroup }, chatRef] = useChat([
+    'activeOrganization',
+    'groups',
+    'activeGroup',
+  ]);
+
   return (
     <>
       <Flex
@@ -70,7 +70,7 @@ const Sidebar = ({
                 switchboard
               </Heading>
               <Heading fontSize=".8rem" textAlign="left">
-                {organization?.name}
+                {activeOrganization.name}
               </Heading>
             </Flex>
             <Box as={FiChevronDown} />
@@ -96,13 +96,16 @@ const Sidebar = ({
                   py={1}
                   pl={2}
                   cursor="pointer"
-                  bg={activeGroup?.id === group.id ? hoverColor : 'transparent'}
-                  fontWeight={activeGroup?.id === group.id ? 'bold' : 'normal'}
+                  bg={activeGroup.id === group.id ? hoverColor : 'transparent'}
+                  fontWeight={activeGroup.id === group.id ? 'bold' : 'normal'}
                   _hover={{
                     bg: hoverColor,
                   }}
                   borderRadius={4}
-                  onClick={() => setActiveGroup(group)}
+                  onClick={() => {
+                    chatRef.current.switchGroup(group);
+                    closeSidebar();
+                  }}
                 >
                   {group.name}
                 </Flex>
@@ -139,13 +142,8 @@ const Sidebar = ({
           </Flex>
         </Flex>
       </Flex>
-      <CreateChannelModal
-        isOpen={isOpen}
-        onClose={onClose}
-        refreshGroups={refreshGroups}
-        organization={organization}
-      />
-      <InviteUserModal isOpen={inviteOpen} onClose={inviteOnClose} organization={organization} />
+      <CreateChannelModal isOpen={isOpen} onClose={onClose} />
+      <InviteUserModal isOpen={inviteOpen} onClose={inviteOnClose} />
     </>
   );
 };

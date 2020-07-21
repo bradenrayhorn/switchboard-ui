@@ -11,19 +11,23 @@ import {
 } from '@chakra-ui/core';
 import axios from 'axios';
 import { errorToast, successToast } from '../../utils/toast';
+import { useChat } from './chat-context';
 
-const LeaveGroupConfirmation = ({ isOpen, onClose, groupID, leaveGroup }) => {
+const LeaveGroupConfirmation = ({ isOpen, onClose }) => {
   const cancelRef = useRef();
   const toast = useToast();
+
+  const [, chatRef] = useChat([]);
 
   const handleLeaveGroup = () => {
     axios
       .post('/channels/leave', {
-        channel_id: groupID,
+        channel_id: chatRef.current.activeGroup.id,
       })
       .then(() => {
         successToast('Channel Left', 'You have left the channel.', toast);
-        leaveGroup();
+        chatRef.current.leaveGroup(chatRef.current.activeGroup.id);
+        chatRef.current.switchGroup(null);
         onClose();
       })
       .catch(() => {

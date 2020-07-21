@@ -13,9 +13,11 @@ import {
 } from '@chakra-ui/core';
 import { FiLogOut, FiUsers, FiChevronLeft } from 'react-icons/fi';
 import LeaveGroupConfirmation from './leave-group-confirmation';
+import { useChat } from './chat-context';
 
-const Header = ({ activeGroup, leaveGroup, openDrawer }) => {
+const Header = ({ openDrawer }) => {
   const [leaveOpen, setLeaveOpen] = useState(false);
+  const [{ activeGroup }] = useChat(['activeGroup']);
 
   return (
     <Flex
@@ -40,10 +42,10 @@ const Header = ({ activeGroup, leaveGroup, openDrawer }) => {
           }}
           mr={2}
         />
-        <Text fontWeight="600">{activeGroup?.name}</Text>
+        <Text fontWeight="600">{activeGroup.name}</Text>
       </Flex>
       <Box>
-        {!!activeGroup?.id && (
+        {!!activeGroup.id && (
           <>
             <Popover>
               <PopoverTrigger>
@@ -53,7 +55,7 @@ const Header = ({ activeGroup, leaveGroup, openDrawer }) => {
                 <PopoverHeader>Users</PopoverHeader>
                 <PopoverCloseButton />
                 <PopoverBody>
-                  {activeGroup?.users?.map((u, i) => (
+                  {activeGroup.users?.map((u, i) => (
                     <Text key={i}>{u.username}</Text>
                   ))}
                 </PopoverBody>
@@ -68,14 +70,7 @@ const Header = ({ activeGroup, leaveGroup, openDrawer }) => {
           </>
         )}
       </Box>
-      <LeaveGroupConfirmation
-        isOpen={leaveOpen}
-        onClose={() => setLeaveOpen(false)}
-        groupID={activeGroup?.id}
-        leaveGroup={() => {
-          leaveGroup(activeGroup.id);
-        }}
-      />
+      <LeaveGroupConfirmation isOpen={leaveOpen} onClose={() => setLeaveOpen(false)} />
     </Flex>
   );
 };

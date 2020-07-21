@@ -16,17 +16,20 @@ import {
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { errorToast, successToast } from '../../utils/toast';
+import { useChat } from './chat-context';
 
-const InviteUserModal = ({ isOpen, onClose, organization }) => {
+const InviteUserModal = ({ isOpen, onClose }) => {
   const { handleSubmit, errors, register, formState } = useForm();
   const toast = useToast();
+  const [, chatRef] = useChat([]);
 
   const handleInvite = (values) => {
     return new Promise((resolve) => {
+      const organization = chatRef.current.activeOrganization;
       axios
         .post('/organizations/invite-user', {
           username: values.name,
-          organization_id: organization?.id,
+          organization_id: organization.id,
         })
         .then(() => {
           successToast(

@@ -9,6 +9,7 @@ import Chat from './pages/chat/chat';
 import RedirectRoute from './utils/redirect-route';
 import theme from './chakra';
 import OrganizationPage from './pages/organization/organization';
+import { ChatContextProvider } from './pages/chat/chat-context';
 
 function App() {
   return (
@@ -23,7 +24,9 @@ function App() {
             <OrganizationPage />
           </RedirectRoute>
           <RedirectRoute path="/" exact doesRequireAuth>
-            <Chat />
+            <ChatContextProvider>
+              <Chat />
+            </ChatContextProvider>
           </RedirectRoute>
           <Route path="*">
             <NotFound />

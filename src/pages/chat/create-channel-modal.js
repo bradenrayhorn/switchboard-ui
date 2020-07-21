@@ -22,15 +22,17 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { errorToast } from '../../utils/toast';
 import { getID } from '../../utils/user';
+import { useChat } from './chat-context';
 
-const CreateChannelModal = ({ isOpen, onClose, refreshGroups, organization }) => {
+const CreateChannelModal = ({ isOpen, onClose }) => {
   const { handleSubmit, register, formState, errors } = useForm();
   const toast = useToast();
   const [availableChannels, setAvailableChannels] = useState([]);
+  const [, chatRef] = useChat([]);
 
   useEffect(() => {
     if (isOpen) {
-      axios.get(`/organizations/${organization?.id}/channels`).then(
+      axios.get(`/organizations/${chatRef.current.activeOrganization.id}/channels`).then(
         (response) => {
           setAvailableChannels(
             response.data.data.filter(
@@ -51,12 +53,12 @@ const CreateChannelModal = ({ isOpen, onClose, refreshGroups, organization }) =>
       axios
         .post('/channels', {
           name: channelName,
-          organization_id: organization?.id,
+          organization_id: chatRef.current.activeOrganization.id,
           private: isPrivate,
         })
         .then(() => {
           resolve();
-          refreshGroups();
+          chatRef.current.refreshGroups();
           onClose();
         })
         .catch(() => {
@@ -69,11 +71,11 @@ const CreateChannelModal = ({ isOpen, onClose, refreshGroups, organization }) =>
   const joinChannel = (channelID) => {
     axios
       .post('/channels/join', {
-        organization_id: organization?.id,
+        organization_id: chatRef.current.activeOrganization.id,
         channel_id: channelID,
       })
       .then(() => {
-        refreshGroups();
+        chatRef.current.refreshGroups();
         onClose();
       })
       .catch(() => {
@@ -92,9 +94,11 @@ const CreateChannelModal = ({ isOpen, onClose, refreshGroups, organization }) =>
               </Heading>
               <Box>
                 {availableChannels.map((c, i) => (
-                  <Link my={2} onClick={() => joinChannel(c.id)} key={i}>
-                    #{c.name}
-                  </Link>
+                  <Box key={i}>
+                    <Link my={2} onClick={() => joinChannel(c.id)}>
+                      #{c.name}
+                    </Link>
+                  </Box>
                 ))}
                 {availableChannels.length < 1 && <Text>No channels found.</Text>}
               </Box>
